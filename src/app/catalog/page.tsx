@@ -5,13 +5,16 @@ import { redirect } from "next/navigation";
 
 const API = 'https://jsonplaceholder.typicode.com/posts';
 
+export const dynamic = "force-static";
 
 export default async function Catalog() {
   let data: Gadget[] = [];
 
   try {
-    const res = await axios.get<Gadget[]>(API);
-    data = res.data.slice(0, 3);
+    const res = await fetch(API); //SSG
+    //axios.get<Gadget[]>(API); //SSR
+    data = await res.json();
+    data = data.slice(0, 3);
   } catch (error) {
     console.error("Errore nel fetch dei dati:", error);
     redirect("/");

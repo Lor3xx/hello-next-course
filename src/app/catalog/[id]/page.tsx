@@ -5,9 +5,20 @@ import Link from "next/link";
 
 const API = 'https://jsonplaceholder.typicode.com/posts';
 
+export async function generateStaticParams() {
+  const res = await fetch(API);
+  const data: Gadget[] = await res.json();
+
+  return data.slice(0, 3).map((item) => ({
+    id: item.id.toString(),
+  }));
+}
+
+export const dynamicParams = false;
+
 type Props = {
   params: {
-    id: number;
+    id: string;
   };
 };
 
@@ -15,8 +26,9 @@ export default async function CatalogDetails({ params }: Props) {
   let data: Gadget;
   const {id} = await params;
   try {
-      const res = await axios.get<Gadget>(`${API}/${id}`);
-      data = res.data;
+      const res = await fetch(`${API}/${id}`); //SSG
+      //axios.get<Gadget>(`${API}/${id}`);
+      data = await res.json();
   } catch (error) {
       console.error("Errore nel fetch dei dati:", error);
       redirect("/catalog");
